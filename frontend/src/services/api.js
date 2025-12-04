@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:4000/api';
+const API_URL = 'http://localhost:5001/api';
 
 export const search = async (query, filters = {}) => {
     const response = await axios.get(`${API_URL}/search`, {

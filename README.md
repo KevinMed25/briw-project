@@ -31,7 +31,7 @@ docker-compose up --build -d
 Esto iniciará:
 - Solr en `http://localhost:8983`
 - Tika en `http://localhost:9998`
-- Backend en `http://localhost:4000`
+- Backend en `http://localhost:5001`
 - Frontend en `http://localhost:5173`
 - Crawler en `http://localhost:5000` (interno)
 

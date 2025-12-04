@@ -56,7 +56,7 @@ Configurado específicamente para el idioma español.
 - **Handler `/spell`**: Componente dedicado para verificación ortográfica.
 
 ### 3.2. Backend (API Node.js)
-Expone endpoints REST para el frontend. Puerto: `4000`.
+Expone endpoints REST para el frontend. Puerto: `5001`.
 
 **Endpoints**:
 - `GET /api/search`: Realizar búsquedas en Solr.

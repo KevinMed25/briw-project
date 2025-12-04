@@ -32,7 +32,7 @@ services:
       dockerfile: Dockerfile
     container_name: briw_backend
     ports:
-      - "4000:3000"
+      - "5001:3000"
     environment:
       - PORT=3000
       - SOLR_URL=http://solr:8983/solr/search_core

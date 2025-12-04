@@ -42,7 +42,7 @@ const SearchBar = ({ onSearch }) => {
                 </div>
                 <input
                     type="text"
-                    className="block w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg transition-all duration-300 hover:shadow-xl"
+                    className="block w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg dark:shadow-none transition-all duration-300 hover:shadow-xl dark:hover:bg-gray-750"
                     placeholder="Search documents, files, and more..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
@@ -59,12 +59,12 @@ const SearchBar = ({ onSearch }) => {
             </form>
 
             {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden ring-1 ring-black ring-opacity-5">
+                <div className="absolute z-20 w-full mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-slate-100 dark:border-gray-700 overflow-hidden ring-1 ring-black ring-opacity-5">
                     <ul className="py-1">
                         {suggestions.map((suggestion, index) => (
                             <li
                                 key={index}
-                                className="px-4 py-2.5 hover:bg-slate-50 cursor-pointer flex items-center gap-3 text-slate-700 transition-colors"
+                                className="px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-3 text-slate-700 dark:text-gray-200 transition-colors"
                                 onClick={() => handleSuggestionClick(suggestion)}
                             >
                                 <svg className="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
