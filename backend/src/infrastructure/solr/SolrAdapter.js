@@ -69,6 +69,17 @@ class SolrAdapter {
             throw new Error('Failed to index document');
         }
     }
+
+    async clearIndex() {
+        try {
+            await this.client.post('/update', { delete: { query: '*:*' } }, {
+                params: { commit: 'true' }
+            });
+        } catch (error) {
+            console.error('Solr Clear Index Error:', error.message);
+            throw new Error('Failed to clear index');
+        }
+    }
 }
 
 module.exports = new SolrAdapter();

@@ -1,23 +1,43 @@
 import os
 import time
 import requests
+import threading
+from flask import Flask, jsonify
+from flask_cors import CORS
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from processor import process_document
 from indexer import SolrIndexer
 
+app = Flask(__name__)
+CORS(app)
+
 # Configuration
-SEEDS = [
-    "https://es.wikipedia.org/wiki/Apache_Solr",
-    "https://es.wikipedia.org/wiki/Buscador",
-    "https://es.wikipedia.org/wiki/Recuperaci%C3%B3n_de_informaci%C3%B3n"
-]
+API_URL = os.getenv("API_URL", "http://localhost:3000/api")
 MAX_DEPTH = 1
 SOLR_URL = os.getenv("SOLR_URL", "http://localhost:8983/solr/search_core")
 TIKA_URL = os.getenv("TIKA_URL", "http://localhost:9998")
 
 visited = set()
 indexer = SolrIndexer(SOLR_URL)
+is_crawling = False
+
+def get_seeds():
+    try:
+        # Use API_URL from environment
+        url = f"{API_URL}/crawler/seeds"
+        print(f"Fetching seeds from {url}...")
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            seeds = response.json()
+            print(f"Loaded {len(seeds)} seeds from API.")
+            return seeds
+        else:
+            print(f"Failed to fetch seeds: {response.status_code}")
+            return []
+    except Exception as e:
+        print(f"Error fetching seeds: {e}")
+        return []
 
 def is_valid_url(url):
     parsed = urlparse(url)
@@ -82,13 +102,44 @@ def crawl(url, depth):
     except Exception as e:
         print(f"Error crawling {url}: {e}")
 
+def run_crawler_job():
+    global is_crawling, visited
+    is_crawling = True
+    visited = set() # Reset visited for new run
+    try:
+        print("Starting crawler job...")
+        seeds = get_seeds()
+        if not seeds:
+            print("No seeds found.")
+        
+        for seed in seeds:
+            crawl(seed, 0)
+        
+        indexer.commit()
+        print("Crawling finished.")
+    except Exception as e:
+        print(f"Crawler job failed: {e}")
+    finally:
+        is_crawling = False
+
+@app.route('/crawl', methods=['POST'])
+def trigger_crawl():
+    global is_crawling
+    if is_crawling:
+        return jsonify({"message": "Crawler is already running"}), 409
+    
+    thread = threading.Thread(target=run_crawler_job)
+    thread.start()
+    return jsonify({"message": "Crawler started"}), 202
+
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({"status": "ok", "crawling": is_crawling})
+
 if __name__ == "__main__":
     # Wait for Solr to be ready
     print("Waiting for Solr...")
     time.sleep(10) 
     
-    for seed in SEEDS:
-        crawl(seed, 0)
-    
-    indexer.commit()
-    print("Crawling finished.")
+    # Start Flask app
+    app.run(host='0.0.0.0', port=5000)

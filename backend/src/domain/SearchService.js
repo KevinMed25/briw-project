@@ -76,6 +76,10 @@ class SearchService {
             didYouMean: didYouMean
         };
     }
+    async clearIndex() {
+        await solrAdapter.clearIndex();
+        return { message: 'Index cleared successfully' };
+    }
 }
 
 module.exports = new SearchService();

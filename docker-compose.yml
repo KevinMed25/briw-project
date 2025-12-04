@@ -54,6 +54,25 @@ services:
     depends_on:
       - backend
 
+  crawler:
+    build:
+      context: ./crawler
+      dockerfile: Dockerfile
+    container_name: briw_crawler
+    ports:
+      - "5000:5000"
+    environment:
+      - SOLR_URL=http://solr:8983/solr/search_core
+      - TIKA_URL=http://tika:9998
+      - API_URL=http://backend:3000/api
+    depends_on:
+      solr:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    networks:
+      - briw_net
+
 volumes:
   solr_data:
 

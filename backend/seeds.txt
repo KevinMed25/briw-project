@@ -1,0 +1,3 @@
+https://es.wikipedia.org/wiki/Apache_Solr
+https://es.wikipedia.org/wiki/Buscador
+https://es.wikipedia.org/wiki/Recuperaci%C3%B3n_de_informaci%C3%B3n

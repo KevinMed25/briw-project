@@ -27,3 +27,28 @@ export const uploadFile = async (file) => {
     });
     return response.data;
 };
+
+export const getSeeds = async () => {
+    const response = await axios.get(`${API_URL}/crawler/seeds`);
+    return response.data;
+};
+
+export const updateSeeds = async (seeds) => {
+    const response = await axios.post(`${API_URL}/crawler/seeds`, { seeds });
+    return response.data;
+};
+
+export const clearIndex = async () => {
+    const response = await axios.post(`${API_URL}/search/clear`);
+    return response.data;
+};
+
+export const runCrawler = async () => {
+    const response = await axios.post(`${API_URL}/crawler/run`);
+    return response.data;
+};
+
+export const getCrawlerStatus = async () => {
+    const response = await axios.get(`${API_URL}/crawler/status`);
+    return response.data;
+};

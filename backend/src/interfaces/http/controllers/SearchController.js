@@ -28,6 +28,14 @@ class SearchController {
             res.status(500).json({ error: error.message });
         }
     }
+    async clearIndex(req, res) {
+        try {
+            const result = await searchService.clearIndex();
+            res.json(result);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 module.exports = new SearchController();

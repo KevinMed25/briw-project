@@ -3,12 +3,14 @@ import SearchBar from './components/SearchBar';
 import SearchResults from './components/SearchResults';
 import Facets from './components/Facets';
 import UploadModal from './components/UploadModal';
-import { search } from './services/api';
+import SeedManagerModal from './components/SeedManagerModal';
+import { search, clearIndex } from './services/api';
 
 function App() {
     const [results, setResults] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const [isSeedModalOpen, setIsSeedModalOpen] = useState(false);
     const [filters, setFilters] = useState({});
     const [currentQuery, setCurrentQuery] = useState('');
 
@@ -22,6 +24,19 @@ function App() {
             console.error("Error searching:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleClearIndex = async () => {
+        if (window.confirm('Are you sure you want to clear the entire index? This action cannot be undone.')) {
+            try {
+                await clearIndex();
+                alert('Index cleared successfully.');
+                setResults(null); // Clear current results
+            } catch (error) {
+                console.error('Error clearing index:', error);
+                alert('Failed to clear index.');
+            }
         }
     };
 
@@ -47,15 +62,35 @@ function App() {
                         </div>
                         <h1 className="text-xl font-bold text-slate-900 tracking-tight">SolariSearch</h1>
                     </div>
-                    <button
-                        onClick={() => setIsUploadModalOpen(true)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
-                        Upload Document
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleClearIndex}
+                            className="bg-white hover:bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Clear Index
+                        </button>
+                        <button
+                            onClick={() => setIsSeedModalOpen(true)}
+                            className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+                        >
+                            <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                            Manage Seeds
+                        </button>
+                        <button
+                            onClick={() => setIsUploadModalOpen(true)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                            Upload Document
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -101,6 +136,7 @@ function App() {
             </main>
 
             <UploadModal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} />
+            <SeedManagerModal isOpen={isSeedModalOpen} onClose={() => setIsSeedModalOpen(false)} />
         </div>
     );
 }
