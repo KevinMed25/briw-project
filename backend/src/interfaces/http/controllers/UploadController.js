@@ -1,8 +1,6 @@
-const fs = require('fs');
-const path = require('path');
 const tikaService = require('../../../infrastructure/tika/TikaService');
 const solrAdapter = require('../../../infrastructure/solr/SolrAdapter');
-const config = require('../../../config');
+const db = require('../../../infrastructure/db/PostgresAdapter');
 
 class UploadController {
     async upload(req, res) {
@@ -15,27 +13,25 @@ class UploadController {
             const fileName = req.file.originalname;
             const mimeType = req.file.mimetype;
 
-            // 1. Save file to disk
-            const uploadsDir = path.join(__dirname, '../../../../uploads');
-            if (!fs.existsSync(uploadsDir)) {
-                fs.mkdirSync(uploadsDir, { recursive: true });
-            }
-            const filePath = path.join(uploadsDir, fileName);
-            fs.writeFileSync(filePath, fileBuffer);
+            // 1. Save file to Database
+            const insertQuery = 'INSERT INTO documents (filename, mimetype, data) VALUES ($1, $2, $3) RETURNING id';
+            const dbResult = await db.query(insertQuery, [fileName, mimeType, fileBuffer]);
+            const fileId = dbResult.rows[0].id;
 
             // 2. Extract text with Tika
             const textContent = await tikaService.extractText(fileBuffer, mimeType);
 
             if (!textContent || !textContent.trim()) {
+                // Optional: Delete from DB if extraction fails? For now, keep it.
                 return res.status(422).json({ error: 'Could not extract text from file' });
             }
 
             // 3. Index in Solr
-            // Use the public URL for the file
-            const publicUrl = `http://localhost:5001/uploads/${fileName}`;
+            // Use the API URL to serve the file from DB
+            const publicUrl = `http://localhost:5001/api/files/${fileId}`;
 
             const doc = {
-                id: `file_${Date.now()}_${fileName}`,
+                id: `file_${fileId}_${Date.now()}`,
                 title: fileName,
                 content: textContent,
                 file_type: 'document',

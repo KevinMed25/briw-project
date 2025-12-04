@@ -11,7 +11,6 @@ app.use(express.json());
 const path = require('path');
 
 app.use('/api', routes);
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
