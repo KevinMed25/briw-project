@@ -30,7 +30,7 @@ const SearchResults = ({ results, didYouMean, onSearch }) => {
 
             <div className="space-y-4">
                 {results.results.map((doc) => (
-                    <div key={doc.id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow group">
+                    <div key={doc.id} className="bg-white p-6 rounded-xl shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-300 group transform hover:-translate-y-1">
                         <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
                                 <h3 className="text-lg font-semibold text-blue-600 mb-1 group-hover:underline decoration-2 underline-offset-2">

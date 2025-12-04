@@ -41,7 +41,7 @@ const SearchBar = ({ onSearch }) => {
                 </div>
                 <input
                     type="text"
-                    className="block w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-shadow hover:shadow-md"
+                    className="block w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg transition-all duration-300 hover:shadow-xl"
                     placeholder="Search documents, files, and more..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
