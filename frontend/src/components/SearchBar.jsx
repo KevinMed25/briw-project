@@ -21,6 +21,7 @@ const SearchBar = ({ onSearch }) => {
 
     const handleSearch = (e) => {
         e.preventDefault();
+        if (!query.trim()) return;
         onSearch(query);
         setShowSuggestions(false);
     };
