@@ -4,42 +4,52 @@ const Facets = ({ facets, onFilter, activeFilters }) => {
     if (!facets || Object.keys(facets).length === 0) return null;
 
     return (
-        <div className="w-64 flex-shrink-0">
-            <h3 className="text-lg font-semibold mb-4">Filtros</h3>
-            {Object.entries(facets).map(([field, values]) => {
-                // Solr returns facets as a flat array [val1, count1, val2, count2...]
-                // We need to pair them up
-                const pairs = [];
-                for (let i = 0; i < values.length; i += 2) {
-                    pairs.push({ value: values[i], count: values[i + 1] });
-                }
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                Filters
+            </h3>
+            <div className="space-y-6">
+                {Object.entries(facets).map(([field, values]) => {
+                    const pairs = [];
+                    for (let i = 0; i < values.length; i += 2) {
+                        pairs.push({ value: values[i], count: values[i + 1] });
+                    }
 
-                if (pairs.length === 0) return null;
+                    if (pairs.length === 0) return null;
 
-                return (
-                    <div key={field} className="mb-6">
-                        <h4 className="font-medium text-gray-700 mb-2 capitalize">{field.replace('_', ' ')}</h4>
-                        <ul className="space-y-1">
-                            {pairs.map((pair) => {
-                                const isActive = activeFilters && activeFilters[field] === pair.value;
-                                return (
-                                    <li key={pair.value}>
-                                        <button
-                                            className={`flex items-center justify-between w-full text-sm hover:text-blue-600 ${isActive ? 'font-bold text-blue-700' : 'text-gray-600'}`}
-                                            onClick={() => onFilter(field, pair.value)}
-                                        >
-                                            <span>{pair.value}</span>
-                                            <span className={`px-2 py-0.5 rounded-full text-xs ${isActive ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
-                                                {pair.count}
-                                            </span>
-                                        </button>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-                );
-            })}
+                    return (
+                        <div key={field}>
+                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
+                                {field.replace('_', ' ')}
+                            </h4>
+                            <ul className="space-y-2">
+                                {pairs.map((pair) => {
+                                    const isActive = activeFilters && activeFilters[field] === pair.value;
+                                    return (
+                                        <li key={pair.value}>
+                                            <button
+                                                className={`flex items-center justify-between w-full text-sm px-2 py-1.5 rounded-md transition-colors ${isActive
+                                                    ? 'bg-blue-50 text-blue-700 font-medium'
+                                                    : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                                    }`}
+                                                onClick={() => onFilter(field, pair.value)}
+                                            >
+                                                <span className="truncate">{pair.value}</span>
+                                                <span className={`text-xs ${isActive ? 'text-blue-500' : 'text-slate-400'}`}>
+                                                    {pair.count}
+                                                </span>
+                                            </button>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 };
