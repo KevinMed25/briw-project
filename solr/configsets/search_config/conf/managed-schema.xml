@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="search_config" version="1.6">
+  <!-- Field Types -->
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+  <fieldType name="int" class="solr.IntPointField" docValues="true"/>
+  <fieldType name="float" class="solr.FloatPointField" docValues="true"/>
+  <fieldType name="long" class="solr.LongPointField" docValues="true"/>
+  <fieldType name="double" class="solr.DoublePointField" docValues="true"/>
+  <fieldType name="date" class="solr.DatePointField" docValues="true"/>
+
+  <!-- Spanish Text Field Type with Analysis Chain -->
+  <fieldType name="text_es" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_es.txt" format="snowball" />
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+      <filter class="solr.SpanishLightStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- Spellcheck Field Type -->
+  <fieldType name="text_spell" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- Fields -->
+  <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+  <field name="title" type="text_es" indexed="true" stored="true" />
+  <field name="content" type="text_es" indexed="true" stored="true" />
+  <field name="category" type="string" indexed="true" stored="true" />
+  <field name="file_type" type="string" indexed="true" stored="true" />
+  <field name="url" type="string" indexed="true" stored="true" />
+  <field name="last_modified" type="date" indexed="true" stored="true" />
+  <field name="_version_" type="long" indexed="true" stored="true" />
+  
+  <!-- Copy Field for general search -->
+  <field name="_text_" type="text_es" indexed="true" stored="false" multiValued="true"/>
+  <copyField source="title" dest="_text_"/>
+  <copyField source="content" dest="_text_"/>
+
+  <!-- Spellcheck Field -->
+  <field name="spell" type="text_spell" indexed="true" stored="true" multiValued="true"/>
+  <copyField source="title" dest="spell"/>
+  <copyField source="content" dest="spell"/>
+
+  <!-- Dynamic Fields -->
+  <dynamicField name="*_s"  type="string"  indexed="true"  stored="true" />
+  <dynamicField name="*_t"  type="text_es" indexed="true"  stored="true" />
+  <dynamicField name="*_dt" type="date"    indexed="true"  stored="true" />
+
+  <uniqueKey>id</uniqueKey>
+</schema>

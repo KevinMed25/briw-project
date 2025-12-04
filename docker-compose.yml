@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  solr:
+    build:
+      context: ./solr
+      dockerfile: Dockerfile
+    container_name: briw_solr
+    ports:
+      - "8983:8983"
+    volumes:
+      - solr_data:/var/solr
+    networks:
+      - briw_net
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8983/solr/admin/info/system" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  tika:
+    image: apache/tika:latest
+    container_name: briw_tika
+    ports:
+      - "9998:9998"
+    networks:
+      - briw_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: briw_backend
+    ports:
+      - "4000:3000"
+    environment:
+      - PORT=3000
+      - SOLR_URL=http://solr:8983/solr/search_core
+    depends_on:
+      solr:
+        condition: service_healthy
+    networks:
+      - briw_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: briw_frontend
+    ports:
+      - "5173:5173"
+    networks:
+      - briw_net
+    depends_on:
+      - backend
+
+volumes:
+  solr_data:
+
+
+networks:
+  briw_net:
+    driver: bridge

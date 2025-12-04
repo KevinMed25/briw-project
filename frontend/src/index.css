@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply bg-gray-50 text-gray-900;
+}
+
+em {
+    @apply not-italic font-bold bg-yellow-200 text-gray-900 rounded px-0.5;
+}
