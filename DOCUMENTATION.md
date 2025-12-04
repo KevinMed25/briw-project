@@ -59,32 +59,37 @@ Configurado específicamente para el idioma español.
 Expone endpoints REST para el frontend. Puerto: `4000`.
 
 **Endpoints**:
-- `GET /api/search`: Realiza búsquedas en Solr.
-    - Params: `q` (query), `filters` (JSON string), `page`.
-    - Retorna: Resultados, Facetas, Highlighting, DidYouMean.
+- `GET /api/search`: Realizar búsquedas en Solr.
+- `POST /api/search/clear`: Eliminar todos los documentos del índice.
 - `GET /api/suggest`: Proxy para el autocompletado de Solr.
-- `POST /api/upload`: Recibe archivos (multipart/form-data).
-    - Proceso: Envía el archivo a Tika -> Recibe texto -> Indexa en Solr.
+- `POST /api/upload`: Recibir archivos (multipart/form-data) e indexarlos vía Tika.
+- `GET /api/crawler/seeds`: Obtener lista de URLs semilla.
+- `POST /api/crawler/seeds`: Actualizar lista de URLs semilla.
+- `POST /api/crawler/run`: Iniciar proceso de crawling.
+- `GET /api/crawler/status`: Consultar estado del crawler.
 
-### 3.3. Crawler (Python)
-Script de indexación web.
+### 3.3. Crawler (Python Flask)
+Servicio web para la indexación bajo demanda.
 
 **Lógica**:
-1. Lee URLs semilla (Wikipedia).
-2. Realiza peticiones HTTP.
-3. Si es HTML: Extrae título y texto con BeautifulSoup. Busca enlaces (profundidad 1).
-4. Si es PDF/DOCX: Envía a Tika para extracción.
-5. Envía documentos procesados a Solr.
+1. Exponer endpoint `POST /crawl`.
+2. Leer URLs semilla desde la API del Backend.
+3. Realizar peticiones HTTP a las semillas.
+4. Procesar contenido:
+    - HTML: Extraer título y texto con BeautifulSoup.
+    - PDF/DOCX: Enviar a Tika para extracción.
+5. Enviar documentos procesados a Solr.
+6. Mantener estado de ejecución para monitoreo.
 
 ### 3.4. Frontend (React)
 Interfaz de usuario moderna.
 
 **Características**:
-- **Búsqueda en tiempo real**: Sugerencias mientras escribes.
-- **Facetas**: Filtrado dinámico por categoría y tipo.
-- **Resaltado**: Muestra fragmentos con los términos de búsqueda en negrita/cursiva.
-- **Corrección**: Sugiere términos alternativos ante errores tipográficos.
-- **Subida**: Modal para cargar archivos locales al índice.
+- **Búsqueda en tiempo real**: Visualizar sugerencias al escribir.
+- **Facetas**: Filtrar dinámicamente por categoría y tipo.
+- **Gestión de Semillas**: Modal para editar URLs y ejecutar el crawler.
+- **Limpieza**: Opción para vaciar el índice completamente.
+- **Subida**: Modal para cargar archivos locales.
 
 ---
 
