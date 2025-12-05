@@ -108,6 +108,7 @@ Interfaz de usuario moderna.
 - **Gestión de Semillas**: Modal para editar URLs y ejecutar el crawler.
 - **Limpieza**: Opción para vaciar el índice completamente.
 - **Subida**: Modal para cargar archivos locales.
+- **Paginación**: Visualización de resultados dividida en páginas de 10 elementos.
 
 **Responsabilidades**:
 - Presentar una interfaz amigable e intuitiva al usuario.

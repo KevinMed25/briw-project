@@ -4,6 +4,7 @@ import SearchResults from './components/SearchResults';
 import Facets from './components/Facets';
 import UploadModal from './components/UploadModal';
 import SeedManagerModal from './components/SeedManagerModal';
+import Pagination from './components/Pagination';
 import ThemeToggle from './components/ThemeToggle';
 import { ThemeProvider } from './context/ThemeContext';
 import { search, clearIndex } from './services/api';
@@ -15,18 +16,25 @@ function AppContent() {
     const [isSeedModalOpen, setIsSeedModalOpen] = useState(false);
     const [filters, setFilters] = useState({});
     const [currentQuery, setCurrentQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
 
-    const handleSearch = async (query, activeFilters = filters) => {
+    const handleSearch = async (query, activeFilters = filters, page = 1) => {
         setLoading(true);
         setCurrentQuery(query);
+        setCurrentPage(page);
         try {
-            const data = await search(query, activeFilters);
+            const data = await search(query, activeFilters, page);
             setResults(data);
         } catch (error) {
             console.error("Error searching:", error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handlePageChange = (newPage) => {
+        handleSearch(currentQuery, filters, newPage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleClearIndex = async () => {
@@ -127,6 +135,13 @@ function AppContent() {
                                 </div>
                             ) : (
                                 <SearchResults results={results} didYouMean={results?.didYouMean} onSearch={handleSearch} />
+                            )}
+                            {results && (
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={Math.ceil(results.total / 10)}
+                                    onPageChange={handlePageChange}
+                                />
                             )}
                         </section>
                     </div>

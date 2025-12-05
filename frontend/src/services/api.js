@@ -2,11 +2,15 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5001/api';
 
-export const search = async (query, filters = {}) => {
+export const search = async (query, filters = {}, page = 1) => {
+    const rows = 10;
+    const start = (page - 1) * rows;
     const response = await axios.get(`${API_URL}/search`, {
         params: {
             q: query,
-            filters: JSON.stringify(filters)
+            filters: JSON.stringify(filters),
+            rows: rows,
+            start: start
         }
     });
     return response.data;
