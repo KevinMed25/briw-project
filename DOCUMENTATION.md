@@ -3,7 +3,7 @@
 ## 1. Visión General
 El sistema es una solución de búsqueda distribuida diseñada para indexar y recuperar información en español desde múltiples fuentes (web y archivos locales). Utiliza una arquitectura de microservicios contenerizada.
 
-### Tecnologías Clave
+### Tecnologías
 - **Apache Solr 9.4**: Motor de búsqueda central.
 - **Node.js (Express)**: API Gateway y lógica de negocio.
 - **React (Vite)**: Interfaz de usuario.
@@ -55,6 +55,12 @@ Configurado específicamente para el idioma español.
 - **Handler `/suggest`**: Utiliza `FuzzyLookupFactory` y `HighFrequencyDictionaryFactory` sobre el campo `spell` para autocompletado y corrección.
 - **Handler `/spell`**: Componente dedicado para verificación ortográfica.
 
+**Responsabilidades**:
+- Indexar documentos con análisis lingüístico (stemming, stopwords, sinónimos).
+- Ejecutar consultas de búsqueda ponderadas.
+- Proveer sugerencias de autocompletado y corrección ortográfica.
+- Gestionar facetas y filtrado de resultados.
+
 ### 3.2. Backend (API Node.js)
 Expone endpoints REST para el frontend. Puerto: `5001`.
 
@@ -67,6 +73,12 @@ Expone endpoints REST para el frontend. Puerto: `5001`.
 - `POST /api/crawler/seeds`: Actualizar lista de URLs semilla.
 - `POST /api/crawler/run`: Iniciar proceso de crawling.
 - `GET /api/crawler/status`: Consultar estado del crawler.
+
+**Responsabilidades**:
+- Orquestar la comunicación entre el Frontend, Solr y el Crawler.
+- Gestionar la subida y procesamiento de archivos (Tika).
+- Almacenar y servir la configuración de semillas del crawler.
+- Exponer una API unificada para el cliente.
 
 ### 3.3. Crawler (Python Flask)
 Servicio web para la indexación bajo demanda.
@@ -81,6 +93,12 @@ Servicio web para la indexación bajo demanda.
 5. Enviar documentos procesados a Solr.
 6. Mantener estado de ejecución para monitoreo.
 
+**Responsabilidades**:
+- Navegar recursivamente por las URLs semilla.
+- Extraer texto limpio de páginas HTML y documentos enlazados.
+- Normalizar los datos al formato esperado por Solr.
+- Enviar documentos directamente al índice de Solr.
+
 ### 3.4. Frontend (React)
 Interfaz de usuario moderna.
 
@@ -90,6 +108,12 @@ Interfaz de usuario moderna.
 - **Gestión de Semillas**: Modal para editar URLs y ejecutar el crawler.
 - **Limpieza**: Opción para vaciar el índice completamente.
 - **Subida**: Modal para cargar archivos locales.
+
+**Responsabilidades**:
+- Presentar una interfaz amigable e intuitiva al usuario.
+- Gestionar el estado de la búsqueda y los filtros seleccionados.
+- Visualizar los resultados y sugerencias de forma clara.
+- Permitir la administración básica del sistema (crawler, limpieza).
 
 ---
 
