@@ -1,0 +1,170 @@
+import React, { useState } from 'react';
+import SearchBar from './components/SearchBar';
+import SearchResults from './components/SearchResults';
+import Facets from './components/Facets';
+import UploadModal from './components/UploadModal';
+import SeedManagerModal from './components/SeedManagerModal';
+import Pagination from './components/Pagination';
+import ThemeToggle from './components/ThemeToggle';
+import { ThemeProvider } from './context/ThemeContext';
+import { search, clearIndex } from './services/api';
+
+function AppContent() {
+    const [results, setResults] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const [isSeedModalOpen, setIsSeedModalOpen] = useState(false);
+    const [filters, setFilters] = useState({});
+    const [currentQuery, setCurrentQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const handleSearch = async (query, activeFilters = filters, page = 1) => {
+        setLoading(true);
+        setCurrentQuery(query);
+        setCurrentPage(page);
+        try {
+            const data = await search(query, activeFilters, page);
+            setResults(data);
+        } catch (error) {
+            console.error("Error searching:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePageChange = (newPage) => {
+        handleSearch(currentQuery, filters, newPage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleClearIndex = async () => {
+        if (window.confirm('Are you sure you want to clear the entire index? This action cannot be undone.')) {
+            try {
+                await clearIndex();
+                alert('Index cleared successfully.');
+                setResults(null); // Clear current results
+            } catch (error) {
+                console.error('Error clearing index:', error);
+                alert('Failed to clear index.');
+            }
+        }
+    };
+
+    const handleFilter = (field, value) => {
+        const newFilters = { ...filters };
+        if (newFilters[field] === value) {
+            delete newFilters[field]; // Toggle off
+        } else {
+            newFilters[field] = value; // Set new value
+        }
+        setFilters(newFilters);
+        handleSearch(currentQuery, newFilters);
+    };
+
+    return (
+        <div className="min-h-screen bg-slate-50 dark:bg-gray-900 text-slate-900 dark:text-gray-100 font-sans transition-colors duration-200">
+            {/* Header */}
+            <header className="bg-white dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700 sticky top-0 z-30 shadow-sm transition-colors duration-200">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                            S
+                        </div>
+                        <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">SolariSearch</h1>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <ThemeToggle />
+                        <button
+                            onClick={handleClearIndex}
+                            className="bg-white dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Clear Index
+                        </button>
+                        <button
+                            onClick={() => setIsSeedModalOpen(true)}
+                            className="bg-white dark:bg-gray-700 hover:bg-slate-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 border border-slate-300 dark:border-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+                        >
+                            <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                            Manage Seeds
+                        </button>
+                        <button
+                            onClick={() => setIsUploadModalOpen(true)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                            Upload Document
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="grid grid-cols-12 gap-8 items-start">
+                    {/* Left Column: Filters (3 cols) */}
+                    <div className="col-span-12 lg:col-span-3">
+                        {results && results.facets && (
+                            <aside className="sticky top-24">
+                                <Facets
+                                    facets={results.facets}
+                                    onFilter={handleFilter}
+                                    activeFilters={filters}
+                                />
+                            </aside>
+                        )}
+                    </div>
+
+                    {/* Center Column: Search & Results (6 cols) */}
+                    <div className="col-span-12 lg:col-span-6 flex flex-col gap-8">
+                        <SearchBar onSearch={handleSearch} />
+
+                        <section className="min-w-0">
+                            {loading ? (
+                                <div className="flex flex-col items-center justify-center py-12 text-slate-400 dark:text-gray-500">
+                                    <svg className="animate-spin h-8 w-8 mb-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <p className="text-sm font-medium">Searching documents...</p>
+                                </div>
+                            ) : (
+                                <SearchResults results={results} didYouMean={results?.didYouMean} onSearch={handleSearch} />
+                            )}
+                            {results && (
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={Math.ceil(results.total / 10)}
+                                    onPageChange={handlePageChange}
+                                />
+                            )}
+                        </section>
+                    </div>
+
+                    {/* Right Column: Spacer (3 cols) */}
+                    <div className="hidden lg:block lg:col-span-3">
+                        {/* Empty spacer to balance the grid and keep center column perfectly centered */}
+                    </div>
+                </div>
+            </main>
+
+            <UploadModal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} />
+            <SeedManagerModal isOpen={isSeedModalOpen} onClose={() => setIsSeedModalOpen(false)} />
+        </div>
+    );
+}
+
+function App() {
+    return (
+        <ThemeProvider>
+            <AppContent />
+        </ThemeProvider>
+    );
+}
+
+export default App;

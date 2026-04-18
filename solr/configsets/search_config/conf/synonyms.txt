@@ -1,0 +1,53 @@
+# Synonyms
+coche, auto, automóvil, carro
+ordenador, computadora, pc
+móvil, celular, teléfono
+vivienda, casa, hogar, domicilio
+trabajo, empleo, labor, ocupación
+dinero, plata, efectivo, capital
+rápido, veloz, ágil, ligero
+feliz, contento, alegre, dichoso
+triste, apenado, melancólico
+grande, enorme, gigante, vasto
+pequeño, chico, diminuto
+bonito, hermoso, bello, lindo
+feo, horrible, desagradable
+bueno, bondadoso, benévolo
+malo, malvado, perverso
+inteligente, listo, astuto, sabio
+tonto, necio, estúpido
+fuerte, robusto, vigoroso
+débil, frágil, endeble
+nuevo, reciente, moderno
+viejo, antiguo, anciano
+comprar, adquirir, obtener
+vender, traspasar, enajenar
+comer, alimentarse, ingerir
+beber, tomar, ingerir
+dormir, descansar, reposar
+correr, trotar
+andar, caminar, pasear
+hablar, conversar, dialogar
+escuchar, oír, atender
+ver, mirar, observar
+leer, estudiar, repasar
+escribir, redactar, anotar
+aprender, estudiar, instruirse
+enseñar, educar, instruir
+ayudar, socorrer, auxiliar
+amar, querer, adorar
+odiar, detestar, aborrecer
+ganar, vencer, triunfar
+perder, fracasar, ser derrotado
+empezar, comenzar, iniciar
+terminar, acabar, finalizar
+siempre, eternamente, perpetuamente
+nunca, jamás
+quizás, tal vez, a lo mejor
+sí, afirmativo, claro
+no, negativo
+hola, saludos
+adiós, hasta luego, chao
+gracias, agradecido
+por favor, ruego
+perdón, disculpa, lo siento

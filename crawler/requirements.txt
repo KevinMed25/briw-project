@@ -1,0 +1,7 @@
+requests
+beautifulsoup4
+tika
+pysolr
+lxml
+flask
+flask-cors
